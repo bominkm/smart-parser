@@ -1,14 +1,25 @@
 import os
 import fitz 
+from typing import List, Tuple, Dict
 
-def extract_images_from_page(page, doc):
+def extract_images_from_page(
+        page: fitz.Page, doc: fitz.Document
+        ) -> List[Tuple[int, Dict[str, str | bytes | int]]]:
     """
     Args:
-        page: pdf page
-        doc: pdf document
+        page (fitz.Page): PDF 페이지 객체
+        doc (fitz.Document): PDF 문서 객체
 
     Returns:
-        [(img_idx, base_image)]
+        List[Tuple[int, Dict[str, str | bytes | int]]]: 
+            - List: 추출된 이미지 정보 리스트
+            - Tuple[int, Dict]: 각 리스트 요소 (이미지 인덱스, 이미지 정보 딕셔너리)
+                - int: 이미지 인덱스
+                - Dict[str, str | bytes | int]: 이미지 정보 딕셔너리
+                    - "ext" (str): 이미지 확장자 (예: "png", "jpg")
+                    - "image" (bytes): 이미지 데이터 (바이너리 형식)
+                    - "width" (int): 이미지 가로 크기 (픽셀 단위)
+                    - "height" (int): 이미지 세로 크기 (픽셀 단위)
     """
     images = page.get_images(full=True)
     extracted_images = []
@@ -28,6 +39,9 @@ def save_extracted_image(image_data, pdf_img_path, page_no, img_idx):
         pdf_img_path
         page_no
         img_idx
+
+    Returns:
+        None
     """
     image_bytes = image_data["image"]
     ext = image_data["ext"] 
@@ -44,6 +58,9 @@ def extract_images_from_pdf(pdf_path: str, pdf_img_path: str):
     Args:
         pdf_path (str): input pdf file path
         pdf_img_path (str): output image file path
+
+    Returns:
+        None
     """
 
     os.makedirs(pdf_img_path, exist_ok=True)
