@@ -1,32 +1,59 @@
 import os
-import fitz
+import fitz 
 
-def extract_img_from_pdf(pdf_path: str, pdf_img_path: str):
+def extract_images_from_page(page, doc):
     """
     Args:
-        pdf_path (str): 대상 pdf 경로
-        pdf_img_path (str): 추출된 이미지 저장 경로
+        page: pdf page
+        doc: pdf document
+
+    Returns:
+        [(img_idx, base_image)]
     """
+    images = page.get_images(full=True)
+    extracted_images = []
+
+    for img_idx, img in enumerate(images):
+        xref = img[0] 
+        base_image = doc.extract_image(xref)  
+        extracted_images.append((img_idx, base_image)) 
+    
+    return extracted_images
+
+
+def save_extracted_image(image_data, pdf_img_path, page_no, img_idx):
+    """
+    Args:
+        image_data
+        pdf_img_path
+        page_no
+        img_idx
+    """
+    image_bytes = image_data["image"]
+    ext = image_data["ext"] 
+
+    image_filename = f"page_{page_no}_img_{img_idx}.{ext}"
+    image_path = os.path.join(pdf_img_path, image_filename)
+
+    with open(image_path, "wb") as img_file:
+        img_file.write(image_bytes)
+
+
+def extract_images_from_pdf(pdf_path: str, pdf_img_path: str):
+    """
+    Args:
+        pdf_path (str): input pdf file path
+        pdf_img_path (str): output image file path
+    """
+
     os.makedirs(pdf_img_path, exist_ok=True)
-    
+
     doc = fitz.open(pdf_path)
-    
-    image_count = 0  
-    
-    for page_number in range(len(doc)):
-        page = doc[page_number]
-        images = page.get_images(full=True)  
+    for page_no in range(len(doc)):
+        page = doc[page_no]
+        images = extract_images_from_page(page, doc) 
 
-        for img_idx, img in enumerate(images):
-            xref = img[0]  
-            base_image = doc.extract_image(xref) 
-            img_bytes = base_image["image"]  
-            img_ext = base_image["ext"]  
+        for img_idx, image_data in images:
+            save_extracted_image(image_data, pdf_img_path, page_no + 1, img_idx + 1) 
 
-            img_file_name = f"page_{page_number+1}_img_{img_idx+1}.{img_ext}"
-            img_path = os.path.join(pdf_img_path, img_file_name)
-            
-            with open(img_path, "wb") as img_file:
-                img_file.write(img_bytes)
-
-            image_count += 1
+    doc.close()
