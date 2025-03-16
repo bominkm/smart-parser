@@ -57,3 +57,10 @@ def extract_images_from_pdf(pdf_path: str, pdf_img_path: str):
             save_extracted_image(image_data, pdf_img_path, page_no + 1, img_idx + 1) 
 
     doc.close()
+
+
+if __name__ == "__main__":
+    pdf_path = "/Users/test.pdf"
+    pdf_img_path = "/Users/test"
+
+    extract_images_from_pdf(pdf_path, pdf_img_path)
