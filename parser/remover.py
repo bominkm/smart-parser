@@ -10,6 +10,7 @@ def remove_images(pdf_path: str, removed_pdf_path: str):
     for page in doc:
         img_list = page.get_images()
         for img in img_list:
-            page.delete_image(img[0])
+            xref = img[0] 
+            page.delete_image(xref)
 
     doc.save(removed_pdf_path)
