@@ -1,5 +1,8 @@
 import os
+
 from openai import OpenAI
+from encoder import process_file
+
 
 def inference_vlm(prompt: str, image_data: str) -> str:
     """
@@ -40,10 +43,36 @@ def save_to_md(content: str, md_path: str):
     """
     Args:
         content (str): 변환된 문서 컨텐츠
-        md_path (str): 마크다운 경로
+        md_path (str): 저장할 마크다운 경로
     """
 
     os.mkdir(md_path)
 
     with open(md_path, 'w', encoding='utf-8') as f:
         f.write(content)
+
+
+def parser(img_path: str, md_path: str):
+    """
+    Args:
+        img_path (str): 파싱할 이미지 경로
+        md_path (str): 저장할 마크다운 경로
+    """
+    os.makedirs(md_path, exist_ok=True)
+    img_list = [f for f in os.listdir(img_path) if f.endswith(".jpg")]
+
+    for img in img_list:
+        file_name = img.split(".jpg")[0]
+        converted_img = os.path.join(img_path, img)
+        saved_md_path = os.path.join(md_path, file_name + '.md')
+
+        image_data = process_file(img_file_path=converted_img)
+        parsed_md = inference_vlm(prompt=prompt, image_data=image_data)
+        save_to_md(parsed_md, saved_md_path)
+
+
+if __name__ == "__main__":
+    img_path = "/Users/parser/doc/uuid_scaled_img"
+    md_path = "/Users/parser/doc/uuid_md"
+
+    parser(img_path, md_path)

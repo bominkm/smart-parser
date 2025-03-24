@@ -32,12 +32,12 @@ def extract_images_from_page(
     return extracted_images
 
 
-def save_extracted_image(image_data, pdf_img_path, page_no, img_idx):
+def save_extracted_image(image_data, pdf_img_path, page_num, img_idx):
     """
     Args:
         image_data
         pdf_img_path
-        page_no
+        page_num
         img_idx
 
     Returns:
@@ -46,7 +46,7 @@ def save_extracted_image(image_data, pdf_img_path, page_no, img_idx):
     image_bytes = image_data["image"]
     ext = image_data["ext"] 
 
-    image_filename = f"page_{page_no}_img_{img_idx}.{ext}"
+    image_filename = f"page_{page_num + 1}_img_{img_idx + 1}.{ext}"
     image_path = os.path.join(pdf_img_path, image_filename)
 
     with open(image_path, "wb") as img_file:
@@ -66,18 +66,18 @@ def extract_images_from_pdf(pdf_path: str, pdf_img_path: str):
     os.makedirs(pdf_img_path, exist_ok=True)
 
     doc = fitz.open(pdf_path)
-    for page_no in range(len(doc)):
-        page = doc[page_no]
+    for page_num in range(len(doc)):
+        page = doc[page_num]
         images = extract_images_from_page(page, doc) 
 
         for img_idx, image_data in images:
-            save_extracted_image(image_data, pdf_img_path, page_no + 1, img_idx + 1) 
+            save_extracted_image(image_data, pdf_img_path, page_num, img_idx) 
 
     doc.close()
 
 
 if __name__ == "__main__":
-    pdf_path = "/Users/test.pdf"
-    pdf_img_path = "/Users/test"
+    pdf_path = "/Users/parser/doc/uuid.pdf"
+    pdf_img_path = "/Users/parser/doc/uuid_extracted_img"
 
     extract_images_from_pdf(pdf_path, pdf_img_path)

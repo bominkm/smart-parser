@@ -39,3 +39,10 @@ def resize_pixmap(pdf_path: str, resized_img_path: str, scale: float = 2):
         resized_img = img.resize(new_size, Image.LANCZOS)
 
         resized_img.save(resized_img_path)
+
+
+if __name__ == "__main__":
+    img_path = "/Users/parser/doc/uuid_converted_img"
+    resized_img_path = "/Users/parser/doc/uuid_scaled_img"
+
+    resize_image(img_path, resized_img_path)

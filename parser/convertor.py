@@ -20,3 +20,10 @@ def convert_pdf_to_image(pdf_path: str, img_path: str, img_format: str = "jpg"):
         pix.save(image_path)
 
     doc.close()
+
+
+if __name__ == "__main__":
+    pdf_path = "/Users/parser/doc/uuid_without_img.pdf"
+    img_path = "/Users/parser/doc/uuid_converted_img"
+
+    convert_pdf_to_image(pdf_path, img_path)
