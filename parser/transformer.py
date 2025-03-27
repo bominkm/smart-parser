@@ -33,7 +33,8 @@ def inference_vlm(prompt: str, image_data: str) -> str:
 
     completion = client.chat.completions.create(
         model="qwen/qwen-2.5-vl-7b-instruct",
-        messages=message
+        messages=message,
+        temperature=0
     )
 
     return completion.choices[0].message.content
