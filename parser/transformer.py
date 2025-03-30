@@ -1,4 +1,5 @@
 import os
+import json
 
 from openai import OpenAI
 from encoder import process_file
@@ -53,14 +54,18 @@ def save_to_md(content: str, md_path: str):
         f.write(content)
 
 
-def parser(img_path: str, md_path: str):
+def parser(img_path: str, md_path: str, prompt_path: str):
     """
     Args:
         img_path (str): 파싱할 이미지 경로
         md_path (str): 저장할 마크다운 경로
+        prompt_path (str): 프롬프트 경로
     """
     os.makedirs(md_path, exist_ok=True)
     img_list = [f for f in os.listdir(img_path) if f.endswith(".jpg")]
+
+    with open(prompt_path, 'r') as f:
+        template = json.load(f)
 
     for img in img_list:
         file_name = img.split(".jpg")[0]
@@ -68,12 +73,13 @@ def parser(img_path: str, md_path: str):
         saved_md_path = os.path.join(md_path, file_name + '.md')
 
         image_data = process_file(img_file_path=converted_img)
-        parsed_md = inference_vlm(prompt=prompt, image_data=image_data)
+        parsed_md = inference_vlm(prompt=template['user_prompt'], image_data=image_data)
         save_to_md(parsed_md, saved_md_path)
 
 
 if __name__ == "__main__":
     img_path = "/Users/parser/doc/uuid_scaled_img"
     md_path = "/Users/parser/doc/uuid_md"
+    prompt_path = "/Users/parser/config/template.json"
 
-    parser(img_path, md_path)
+    parser(img_path=img_path, md_path=md_path, prompt_path=prompt_path)
